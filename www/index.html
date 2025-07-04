@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Image Database Console</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
+
+    <link href="//code.htmlhifive.com/h5.css" rel="stylesheet">
+
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!--<script src="//www.htmlhifive.com/ja/res/lib/bootstrap3/js/bootstrap.min.js"></script>-->
+    <script src="//code.htmlhifive.com/ejs-h5mod.js"></script>
+    <script src="//code.htmlhifive.com/h5.dev.js"></script>
+
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <link rel="stylesheet" href="image-db.css" type="text/css" />
+
+    <script type="text/javascript" src="functions.js"></script>
+    <script type="text/javascript" src="image-db.js"></script>
+    <script type="text/javascript" src="calc.js"></script>
+
+    <script type="text/javascript" src="magnifier.js"></script>
+</head>
+
+<body id="indicator-target3">
+    <div class="container-fluid">
+        <div class="table-responsive ">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row m-2">
+                        <div class="col-xs-6">
+                            <h2>POI Management Console</h2>
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-primary" style="font-size: medium;"
+                                onclick="loadDb((CurrentPage - 1) * Limit, Limit);numberOfRecords();getUserIdChickIdList()">
+                                <i class="bi bi-arrow-clockwise" style="font-size: 16px;"></i>
+                                Reload Database
+                            </button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#deleteEmployeeModal" style="font-size: medium;"><i
+                                    class="bi bi-trash-fill" style="font-size: 16px;"></i>
+                                Delete Checked Records
+                            </button>
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#addEmployeeModal" style="font-size: medium;"><i
+                                    class="bi bi-plus-circle-fill" style="font-size: 16px;"></i>
+                                Add New Record
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
+                                </span>
+                            </th>
+                            <th>Index</th>
+                            <th>POI Name</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Address</th>
+                            <th>Category</th>
+                            <th>Icon ID</th>
+                            <th>POI file name</th>
+                            <th>Registraion time</th>
+                            <!--<th>Resolution</th>
+                            <th>Camera</th>
+                            <th>Image</th>
+                            <th>Rating</th>-->
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id='tableBody'>
+                    </tbody>
+                </table>
+                <div class="clearfix">
+                    <ul id="pageMenu" class="pagination">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid text-center">
+        <div class="row m-2">
+            <div class="col">
+                <select name="userIdSelector" class="form-select" id="userIdFilterId"
+                    onchange="updateChickIdSelectorOptions(this)">
+                    <option value=0 disabled selected>User ID</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=4>5</option>
+                    <option value=4>6</option>
+                    <option value=4>7</option>
+                    <option value=4>8</option>
+                    <option value=4>9</option>
+                </select>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" id="breedFilterId" placeholder="Breed">
+            </div>
+            <div class="col">
+                <select name="chickIdSelector" class="form-select" id="chickIdFilterId">
+                    <option value=0 disabled selected>Chick ID</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=4>5</option>
+                    <option value=4>6</option>
+                    <option value=4>7</option>
+                    <option value=4>8</option>
+                    <option value=4>9</option>
+                </select>
+            </div>
+            <div class="col">
+                <select name="trueClassSelector" id="trueClassFilterId" class="form-select">
+                    <option value=99 disabled selected>True Class</option>
+                    <option value="-1">Unkown</option>
+                    <option value=0>Female</option>
+                    <option value=1>Male</option>
+                    <option value=99>All</option>
+                </select>
+            </div>
+            <div class="col">
+                <select name="observedClassSelector" id="observedClassFilterId" class="form-select">
+                    <option value=99 disabled selected value="">Observed Class</option>
+                    <option value="-1">Unkown</option>
+                    <option value=0>Female</option>
+                    <option value=1>Male</option>
+                    <option value=99>All</option>
+                </select>
+            </div>
+            <div class="col">
+                <select name="predictedClassSelector" id="predictedClassFilterId" class="form-select">
+                    <option value=99 disabled selected value="">Predicted Class</option>
+                    <option value="-1">Unkown</option>
+                    <option value=0>Female</option>
+                    <option value=1>Male</option>
+                    <option value=99>All</option>
+                </select>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" id="scoreFilterId" placeholder=">= Score">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" id="cameraFilterId" placeholder="Camera">
+            </div>
+            <div class="col">
+                <select name="ratingSelector" id="ratingFilterId" class="form-select">
+                    <option value=0 disabled selected>Rating</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=5>5</option>
+                    <option value=6>2, 3, 4, 5</option>
+                    <option value=7>3, 4, 5</option>
+                    <option value=8>4, 5</option>
+                    <option value=11>T1</option>
+                    <option value=12>T2</option>
+                    <option value=0>All</option>
+                </select>
+            </div>
+        </div>
+        <div class="row m-2">
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="button" class="btn btn-outline-primary" onclick="applyFilter();" value="Apply Filter">
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="button" class="btn btn-outline-secondary" onclick="resetFilter();"
+                        value="Reset Filter">
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="button" class="btn btn-outline-danger" id="resetRatingButtonId" value="Reset Rating">
+                </div>
+            </div>
+        </div>
+        <div class="row m-2">
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="button" class="btn btn-outline-primary" onclick="exportImageFiles();"
+                        value="Export Original Images">
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="button" class="btn btn-outline-primary" onclick='exportImageFiles("crop")' ;
+                        value="Export Cropped Images">
+                </div>
+            </div>
+            <!--<div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="text" class="form-control" id="numOfExportId" value="Number of export files (default All)">
+                </div>
+            </div>-->
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <a id="downloadZipId" class="form-control" target="_blank" rel="noopener noreferrer"
+                        style="visibility:block">zip file to
+                        be shown</a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input id="numberOfRecordsButtonId" type="button" class="btn btn-outline-primary"
+                        onclick="numberOfRecords()" value="Number of Records">
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="text" class="form-control" id="numEntryId" value="------">
+                </div>
+            </div>
+        </div>
+
+        <div class="row m-2" id="indicator-target">
+            <div class="col-8">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col" colspan="3">Grand Truth</th>
+                            <th scope="col">Total</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" rowspan="3" id="predictedTableHeader">Predicted</th>
+                            <td id="confusionMx-1.1" class="table-success setFilterClass" onClick="setFilter(0, 0)"
+                                hover="cursor:pointer"></td>
+                            <td id="confusionMx-1.2" class="table-danger setFilterClass" onClick="setFilter(1, 0)"></td>
+                            <td id="confusionMx-1.3" class="table-secondary setFilterClass" onClick="setFilter(-1, 0)">
+                            </td>
+                            <td id="confusionMx-1.4" class="table-primary setFilterClass" onClick="setFilter(99, 0)">
+                            </td>
+                            <td>Female(p)</td>
+                        </tr>
+                        <tr>
+                            <td id="confusionMx-2.1" class="table-danger setFilterClass" onClick="setFilter(0, 1)"></td>
+                            <td id="confusionMx-2.2" class="table-success setFilterClass" onClick="setFilter(1, 1)">
+                            </td>
+                            <td id="confusionMx-2.3" class="table-secondary setFilterClass" onClick="setFilter(-1, 1)">
+                            </td>
+                            <td id="confusionMx-2.4" class="table-primary setFilterClass" onClick="setFilter(99, 1)">
+                            </td>
+                            <td>Male(n)</td>
+                        </tr>
+                        <tr>
+                            <td id="confusionMx-3.1" class="table-warning setFilterClass" onClick="setFilter(0, -1)">
+                            </td>
+                            <td id="confusionMx-3.2" class="table-warning setFilterClass" onClick="setFilter(1, -1)">
+                            </td>
+                            <td id="confusionMx-3.3" class="table-secondary setFilterClass" onClick="setFilter(-1, -1)">
+                            </td>
+                            <td id="confusionMx-3.4" class="table-primary setFilterClass" onClick="setFilter(99, -1)">
+                            </td>
+                            <td>Unkown (UN)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Total</th>
+                            <td id="confusionMx-4.1" class="table-primary setFilterClass" onClick="setFilter(0, 99)">
+                            </td>
+                            <td id="confusionMx-4.2" class="table-primary setFilterClass" onClick="setFilter(1, 99)">
+                            </td>
+                            <td id="confusionMx-4.3" class="table-primary setFilterClass" onClick="setFilter(-1, 99)">
+                            </td>
+                            <td id="confusionMx-4.4" class="table-primary setFilterClass" onClick="setFilter(99, 99)">
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"></th>
+                            <td>Female (P)</td>
+                            <td>Male (N)</td>
+                            <td>Unkown (UK)</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <table>
+                    <tr>
+                    <tr>
+                        <td>Predice Female, if Score > </td>
+                        <td><input type="text" class="form-control" id="femaleThresholdId" value=0></td>
+                    </tr>
+                    <tr>
+                        <td>Predice Male, if Score > </td>
+                        <td><input type="text" class="form-control" id="maleThresholdId" value=0></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="btn btn-outline-primary" id=confusionMatrixButtonId
+                                onclick="//confusionMatrix();" value="Update Confusion Matrix">
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-outline-primary">
+                                    <input type="radio" name="options" id="predictedClsButtonId"
+                                        onclick="setConfuusionMatrixMode(this)" autocomplete="off" checked> Predicted
+                                    Cls
+                                </label>
+                                <label class="btn btn-outline-primary">
+                                    <input type="radio" name="options" id="observedClsButtonId"
+                                        onclick="setConfuusionMatrixMode(this)" autocomplete="off"> Observed Cls
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Accuracy1 (TP+TN)/(P+N) </td>
+                        <td><input type="text" class="form-control" id="accuracyId" value="---"></td>
+                    </tr>
+                    <tr>
+                        <td>Accuracy2 (TP+TN)/(P+N-UN) </td>
+                        <td><input type="text" class="form-control" id="accuracy2Id" value="---"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!--<div class="row m-2">
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input id="sendRecordButtonId" type="button" class="btn btn-outline-primary"
+                        onclick="sendRecords();" value="Start Sending Records to">
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <div class="input-group">
+                        <div class="input-group-text">URL</div>
+                        <input type="text" class="form-control" id="serverUrlId" value="https://192.168.0.115:8443">
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <div class="input-group">
+                        <div class="input-group-text">From Index</div>
+                        <input type="text" class="form-control" id="indexShowBoxId" placeholder="count up index"
+                            value="1">
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <div class="input-group">
+                        <div class="input-group-text">User ID</div>
+                        <input type="text" class="form-control" id="sendUserIdId"
+                            placeholder="if it's different from record">
+                    </div>
+                </div>
+            </div>
+        </div>-->
+        <div class="row m-2">
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <input type="button" class="btn btn-outline-primary" onclick="adminMode(this);"
+                        value="Switch to Admin Mode">
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid gap-2 col-12 mx-auto">
+                    <a class="btn btn-outline-primary" href="/swagger/ui" target="_blank"
+                        rel="noopener noreferrer">Swagger
+                        (test API)</a>
+                </div>
+            </div>
+        </div>
+        <!--</div>-->
+    </div>
+
+    <!-- Add Modal HTML -->
+    <div id="addEmployeeModal" class="modal fade" value="0">
+        <div id="add-id" hidden></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="createUser">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Image</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="indicator-target2">
+                        <div class="form-group">
+                            <label>User ID</label>
+                            <input name="userId" type="text" class="form-control" value=1 required>
+                        </div>
+                        <div class="form-group">
+                            <label>User Name</label>
+                            <input name="userName" type="text" class="form-control" value="junichi" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Capured Date (UTC)</label>
+                            <input name="date" type="text" class="form-control" value="2021/09/04 12:17:00:000"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Chicken Breed</label>
+                            <input name="breed" type="text" class="form-control" value="Amakusa" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Chick ID</label>
+                            <input name="chickId" type="text" class="form-control" value=1 required>
+                        </div>
+                        <div class="form-group">
+                            <label>True Class</label>
+                            <select name="trueClass" class="form-control">
+                                <option value="-1">Unkown</option>
+                                <option value=0>Female</option>
+                                <option value=1>Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Observed Class</label>
+                            <select name="observedClass" class="form-control">
+                                <option value="-1">Unkown</option>
+                                <option value=0>Female</option>
+                                <option value=1>Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Resolution Width</label>
+                            <input name="width" type="text" class="form-control" value="1920" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Resolution Height</label>
+                            <input name="height" type="text" class="form-control" value="1080" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Camera</label>
+                            <input name="device" type="text" class="form-control" value="/dev/video0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div>
+                                <input id="base64Area1" name="image" type="text" class="form-control" required>
+                                <input id="imageFileReadButtonId" class="btn btn-outline-primary" type="file" multiple
+                                    onchange='//imageFileRead3();' value="Load from a file">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Bounding Boxes</label>
+                            <input name="boxList" type="text" class="form-control" value='[]' required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <select name="rating" class="form-control">
+                                <option value=1>1</option>
+                                <option value=2>2</option>
+                                <option value=3>3</option>
+                                <option value=4>4</option>
+                                <option value=5>5</option>
+                                <option value=11>T1</option>
+                                <option value=12>T2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input name="notes" type="text" class="form-control" value='' required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <!--<button type="button" class="btn btn-info" data-bs-dismiss="modal"
+                            onClick="createNewUser()">Add</button>-->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="editEmployeeModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="editUserForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Image</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>User ID</label>
+                            <input name="userId" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>User Name</label>
+                            <input name="userName" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Capured Date (UTC)</label>
+                            <input name="date" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Chicken Breed</label>
+                            <input name="breed" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Chick ID</label>
+                            <input name="chickId" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>True Class</label>
+                            <select name="trueClass" class="form-control">
+                                <option value="-1">Unkown</option>
+                                <option value=0>Female</option>
+                                <option value=1>Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Observed Class</label>
+                            <select name="observedClass" class="form-control">
+                                <option value="-1">Unkown</option>
+                                <option value=0>Female</option>
+                                <option value=1>Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Resolution Width</label>
+                            <input name="width" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Resolution Height</label>
+                            <input name="height" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Camera</label>
+                            <input name="device" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div>
+                                <input id="base64Area12" name="image" type="text" class="form-control" required
+                                    disabled>
+                                <input id="imageFileReadButtonId2" class="btn btn-outline-primary" type="file"
+                                    onchange='imageFileRead(this, "base64Area12")' value="Load from a file">
+                            </div>
+                            <!--
+                            <input id="base64Area2" name="image" type="text" class="form-control" required disabled>
+                            <input type="file" onchange='imageFileRead(this, "base64Area2")' value="Load from a file">
+                            -->
+                        </div>
+                        <div class="form-group">
+                            <label>Bounding Boxes</label>
+                            <input name="boxList" type="text" class="form-control" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <select name="rating" class="form-control">
+                                <option value=1>1</option>
+                                <option value=2>2</option>
+                                <option value=3>3</option>
+                                <option value=4>4</option>
+                                <option value=5>5</option>
+                                <option value=11>T1</option>
+                                <option value=12>T2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input name="notes" type="text" class="form-control" value='' required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-info" data-bs-dismiss="modal"
+                            onClick="editUser()">Save</button>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"
+                            onClick="editTrueClass()">Save True Cls</button>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"
+                            onClick="editObservedClass()">Save Observed Cls</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal HTML -->
+    <div id="deleteEmployeeModal" class="modal fade">
+        <div id="delete-id" hidden></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete Image</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete these Records?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary col-lg-2"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-danger col-lg-2" data-bs-dismiss="modal"
+                            onClick="deleteUser()">Delete</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal HTML -->
+    <div id="imageModal" class="modal fade">
+        <div id="image-id" hidden></div>
+        <div class="modal-dialog">
+            <div class="modal-content modal-img">
+                <form>
+                    <div class="modal-header">
+                        <h4 id="imageBoxTitleId" class="modal-title">Image Information</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            onclick='stopPlayImg(); document.getElementById("autoCalcCheckId").checked = false;'></button>
+                    </div>
+                    <div id="fullImgId" class="modal-body">
+                        <table class="table text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Index</th>
+                                    <th>User ID</th>
+                                    <th>Chick ID</th>
+                                    <th>True Class</th>
+                                    <th>Observed Class</th>
+                                    <th>Predicted Cls</th>
+                                </tr>
+                            </thead>
+                            <tbody id='tableBody2'>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>Male</td>
+                                    <td>Male</td>
+                                    <td>Male(99)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="webcam2-0" class="webcamClass">
+                            <img id="classifyerImgId-0" class="webcamImgClass" />
+                            <div id="objBoxWrapperId-0" class="objBoxWrapperClass">
+                                <table class="objBox"
+                                    style="border-color:lime; color:lime; position:absolute; top:10%; left:10%;">
+                                    <tr>
+                                        <td>0.99</td>
+                                    </tr>
+                                </table>
+                                <table class="objBox"
+                                    style="border-color:red; color:red; position:absolute; top:0px; left:0px;">
+                                    <tr>
+                                        <td>0.88</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <img id="heatmapImgId-0" class="webcamImgClass" />
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="modalFooterId">
+                        <div class="d-grid gap-2 col">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Task</div>
+                                        <select id="taskSelectorId" class="form-control" style="text-align: right;"
+                                            onchange="changeTask(this)">
+                                            <option value=0>Review Images</option>
+                                            <option value=1>Set Rating</option>
+                                            <option value=2>Set True Class</option>
+                                            <option value=3>Set Predicted Class</option>
+                                            <option value=4>Set Observed Class</option>
+                                            <option value=5>Send Server</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <button type="button" class="btn btn-outline-info col-xs-1" id="lastButtonId"
+                                        value="Last">-</button>
+                                </div>
+                                <div class="col-1">
+                                    <button type="button" class="btn btn-outline-info col-xs-1" id="reverseButtonId"
+                                        value="Reverse">&#x23f4</button>
+                                </div>
+                                <div class="col-1">
+                                    <button type="button" class="btn btn-outline-info col-xs-1" value="Stop"
+                                        onClick="stopPlayImg()">&#x23f9</button>
+                                </div>
+                                <div class="col-1">
+                                    <button type="button" class="btn btn-outline-info col-xs-1" id="playButtonId"
+                                        value="Play">&#x23f5</button>
+                                </div>
+                                <div class="col-1">
+                                    <button type="button" class="btn btn-outline-info col-xs-1" id="nextButtonId"
+                                        value="Next">+</button>
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Interval</div>
+                                        <select id="playSpeedSelectorId" name="playSpeed" class="form-control"
+                                            style="text-align: right;" onchange="changeSlideShowInterval(this)">
+                                            <option value=0.5>.5</option>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="display: none;">
+                                    <div class="input-group">
+                                        <div class="input-group-text">View</div>
+                                        <select id="annotationsSelectorId" class="form-control"
+                                            style="text-align: right;" onchange="showBox(this)">
+                                            <option value=0>Hide</option>
+                                            <option value=1>Boxes</option>
+                                            <option value=2>Heat Map</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-check form-control-lg">
+                                        <input class="form-check-input" type="checkbox" value="" id="magnifierCheckId"
+                                            onChange="toggleMagnifier2()" unchecked>
+                                        <label class="form-check-label" style="font-size:medium">Magnifier</label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-check form-control-lg">
+                                        <input class="form-check-input" type="checkbox" value="" id="viewBBCheckId"
+                                            onChange="toggleBoundingBoxes()" unchecked>
+                                        <label class="form-check-label" style="font-size:medium">Bounding Boxes</label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-check form-control-lg">
+                                        <input class="form-check-input" type="checkbox" value="" id="viewHeatMapCheckId"
+                                            onChange="toggleHeatMap()" unchecked>
+                                        <label class="form-check-label" style="font-size:medium">Heat Map</label>
+                                    </div>
+                                </div> 
+                                <div class="col-4">
+                                    <!--<label for="customRange1" class="form-label">Example range</label>--> 
+                                    <input type="range" class="form-range" style="margin-top: 15px;" oninput="heatMapOpa(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Task Settings -->
+                    <div class="modal-footer" id="modalFooter2Id" style="display:none">
+                        <div class="d-grid gap-2 col">
+                            <div class="row">
+                                <div class="col" id="userIdSelectorColumnId">
+                                    <div class="input-group">
+                                        <div class="input-group-text">User ID</div>
+                                        <select id="userIdSelectorId" name="userIdSelector" class="form-control"
+                                            style="text-align: right;" onchange="updateChickIdSelectorOptions(this)">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col" id="chickIdSelectorColumnId">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Chick ID</div>
+                                        <select id="chickIdSelectorId" name="chickIdSelector" class="form-control"
+                                            style="text-align: right;" onChange="jumpChickIdImg()">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3" id="ratingColumnId">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Rating</div>
+                                        <select id="ratingSelectorId" name="rating" class="form-control"
+                                            style="text-align: right;" onchange="editRating(this)">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                            <option value=11>T1</option>
+                                            <option value=12>T2</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col" id="trueClassColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">True Class</div>
+                                        <select id="trueClassSelectorId" name="trueClassSelector" class="form-control"
+                                            style="text-align: right;" onChange="editTrueClass(this)">
+                                            <option value="-1">Unkown</option>
+                                            <option value=0>Female</option>
+                                            <option value=1>Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4" id="predictedClassColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Predicted Class</div>
+                                        <select id="predictedClassSelectorId" name="predictedClassSelector"
+                                            class="form-control" style="text-align: right;" disabled>
+                                            <option value="-1">Unkown</option>
+                                            <option value=0>Female</option>
+                                            <option value=1>Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4" id="observedClassColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Observed Class</div>
+                                        <select id="observedClassSelectorId" name="observedClassSelector"
+                                            class="form-control" style="text-align: right;"
+                                            onChange="editObservedClass(this)">
+                                            <option value="-1">Unkown</option>
+                                            <option value=0>Female</option>
+                                            <option value=1>Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4" id="serverIpColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">IP Addr</div>
+                                        <input type="text" class="form-control" id="serverIpId" value="192.168.0.134">
+                                    </div>
+                                </div>
+                                <div class="col-3" id="serverPortColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Port Num</div>
+                                        <input type="text" class="form-control" id="serverPortId" value="8443">
+                                    </div>
+                                </div>
+                                <div class="col-3" id="serverUserIdSelecColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">User ID</div>
+                                        <select id="serverUserIdSelectorId" name="userIdSelector" class="form-control">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-2" id="autoCalcColumnId" style="display:none; height:25px">
+                                    <div class="form-check form-control-lg">
+                                        <input class="form-check-input" type="checkbox" value="" id="autoCalcCheckId"
+                                            onChange="autoCalc(this);" unchecked>
+                                        <label class="form-check-label" style="font-size:medium">Auto</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3" id="yoloThresholdColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Yolo Score 1</div>
+                                        <input type="text" class="form-control" id="yoloThresholdId"
+                                            style="text-align: right;" value="90">
+                                    </div>
+                                </div>
+                                <div class="col-3" id="yoloThreshold2ColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Yolo Score 2</div>
+                                        <input type="text" class="form-control" id="yoloThreshold2Id"
+                                            style="text-align: right;" value="95">
+                                    </div>
+                                </div>
+                                <div class="col-3" id="widthThresholdColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Box Width</div>
+                                        <input type="text" class="form-control" id="widthThresholdId"
+                                            style="text-align: right;" value="680">
+                                    </div>
+                                </div>
+                                <div class="col-3" id="heightThresholdColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Box Height</div>
+                                        <input type="text" class="form-control" id="heightThresholdId"
+                                            style="text-align: right;" value="720">
+                                    </div>
+                                </div>
+                                <div class="col" id="observedClassMaleThresholdColumnId" style="display:none;">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Male Prediction (%)</div>
+                                        <input type="text" class="form-control" id="observedClassMaleThresholdId"
+                                            style="text-align: right;" value="60">
+                                    </div>
+                                </div>
+                                <div class="col" id="observedClassFemaleThresholdColumnId" style="display:none">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Female Prediction (%)</div>
+                                        <input type="text" class="form-control" id="observedClassFemaleThresholdId"
+                                            style="text-align: right;" value="80">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Set True Class Task
+                    <div class="modal-footer" id="modalFooter2Id" style="display:none">
+                        <div class="d-grid gap-2">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <div class="input-group-text">User ID</div>
+                                        <select id="userIdSelectorId" name="userIdSelector" class="form-control"
+                                            style="text-align: right;" onchange="updateChickIdSelectorOptions(this)">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Chick ID</div>
+                                        <select id="chickIdSelectorId" name="chickIdSelector" class="form-control"
+                                            style="text-align: right;" onChange="jumpChickIdImg()">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="d-grid gap-2 col">
+                                        <div class="input-group">
+                                            <div class="input-group-text">True Class</div>
+                                            <select id="trueClassSelectorId" name="trueClassSelector"
+                                                class="form-control" style="text-align: right;"
+                                                onChange="editTrueClass(this)">
+                                                <option value="-1">Unkown</option>
+                                                <option value=0>Female</option>
+                                                <option value=1>Male</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                    <div class="modal-footer" id="modalFooter3Id" style="display:none">
+                        <div class="d-grid gap-2">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text">User ID</div>
+                                        <select id="userIdSelectorId" name="userIdSelector" class="form-control"
+                                            style="text-align: right;" onchange="updateChickIdSelectorOptions(this)">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Chick ID</div>
+                                        <select id="chickIdSelectorId" name="chickIdSelector" class="form-control"
+                                            style="text-align: right;" onChange="jumpChickIdImg()">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Predicted Class</div>
+                                        <select id="predictedClassSelectorId" name="predictedClassSelector"
+                                            class="form-control" style="text-align: right;"
+                                            onchange="editPredictedClass(this);">
+                                            <option value="-1">Unkown</option>
+                                            <option value=0>Female</option>
+                                            <option value=1>Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-check form-control-lg">
+                                        <input class="form-check-input" type="checkbox" value=""
+                                            id="calcObsevedClassCheckId" onChange="autoObservedClass(this);" unchecked>
+                                        <label class="form-check-label" style="font-size: medium;">Calculated</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="modalFooter4Id" style="display:none">
+                        <div class="d-grid gap-2">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text">User ID</div>
+                                        <select id="userIdSelectorId" name="userIdSelector" class="form-control"
+                                            style="text-align: right;" onchange="updateChickIdSelectorOptions(this)">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Chick ID</div>
+                                        <select id="chickIdSelectorId" name="chickIdSelector" class="form-control"
+                                            style="text-align: right;" onChange="jumpChickIdImg()">
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Observed Class</div>
+                                        <select id="observedClassSelectorId" name="observedClassSelector"
+                                            class="form-control" style="text-align: right;"
+                                            onChange="editObservedClass(this)">
+                                            <option value="-1">Unkown</option>
+                                            <option value=0>Female</option>
+                                            <option value=1>Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-check ">
+                                        <input class="form-check-input" type="checkbox" value=""
+                                            id="calcObsevedClassCheckId" onChange="autoObservedClass(this);" unchecked>
+                                        <label class="form-check-label">Auto Calc</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                        <!-- Send Task -->
+                        <div class="modal-footer" id="modalFooter5Id" style="display:none">
+                            <div class="d-grid gap-2">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <div class="input-group">
+                                            <div class="input-group-text">IP Address</div>
+                                            <input type="text" class="form-control" id="serverIpId"
+                                                value="192.168.0.134">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Port Number</div>
+                                            <input type="text" class="form-control" id="serverPortId" value="8443">
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="input-group">
+                                            <div class="input-group-text">User ID</div>
+                                            <select id="serverUserIdSelectorId" name="userIdSelector"
+                                                class="form-control">
+                                                <option value=1>1</option>
+                                                <option value=2>2</option>
+                                                <option value=3>3</option>
+                                                <option value=4>4</option>
+                                                <option value=5>5</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        initPage();
+    </script>
+</body>
+
+</html>
