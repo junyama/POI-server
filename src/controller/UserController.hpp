@@ -8,27 +8,35 @@
 #include "oatpp/web/mime/ContentMappers.hpp"
 #include "oatpp/macro/codegen.hpp"
 
+#include "oatpp/data/mapping/ObjectMapper.hpp"
+
 #include OATPP_CODEGEN_BEGIN(ApiController) //<- Begin Codegen
 
 /**
  * User REST controller.
  */
-class UserController : public oatpp::web::server::api::ApiController {
+class UserController : public oatpp::web::server::api::ApiController
+{
 public:
   UserController(OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers))
-    : oatpp::web::server::api::ApiController(apiContentMappers)
-  {}
+      : oatpp::web::server::api::ApiController(apiContentMappers)
+  {
+  }
+
 private:
   UserService m_userService; // Create user service.
-public:
+  constexpr static const char *TAG = "UserController";
 
+public:
   static std::shared_ptr<UserController> createShared(
-    OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers) // Inject ContentMappers
-  ){
+      OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers) // Inject ContentMappers
+  )
+  {
     return std::make_shared<UserController>(apiContentMappers);
   }
-  
-  ENDPOINT_INFO(createUser) {
+
+  ENDPOINT_INFO(createUser)
+  {
     info->summary = "Create new User";
 
     info->addConsumes<Object<UserDto>>("application/json");
@@ -37,14 +45,28 @@ public:
     info->addResponse<Object<StatusDto>>(Status::CODE_404, "application/json");
     info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
   }
+  
   ENDPOINT("POST", "users", createUser,
            BODY_DTO(Object<UserDto>, userDto))
   {
+    OATPP_LOGd(TAG, "createUser called");
     return createDtoResponse(Status::CODE_200, m_userService.createUser(userDto));
   }
   
-  
-  ENDPOINT_INFO(putUser) {
+  /*
+  ENDPOINT("POST", "users", createUser, BODY_STRING(String, userDtoStr))
+  {
+    OATPP_LOGd(TAG, "createUser called with " + userDtoStr);
+    //auto jsonObjectMapper = oatpp::data::mapping::ObjectMapper::createShared();
+    std::shared_ptr<oatpp::data::mapping::ObjectMapper> jsonObjectMapper;
+    
+    auto userDto = jsonObjectMapper->readFromString<oatpp::Object<UserDto>>(userDtoStr);
+    return createDtoResponse(Status::CODE_200, m_userService.createUser(userDto));
+  }
+  */
+
+  ENDPOINT_INFO(putUser)
+  {
     info->summary = "Update User by userId";
 
     info->addConsumes<Object<UserDto>>("application/json");
@@ -62,9 +84,9 @@ public:
     userDto->id = userId;
     return createDtoResponse(Status::CODE_200, m_userService.updateUser(userDto));
   }
-  
-  
-  ENDPOINT_INFO(getUserById) {
+
+  ENDPOINT_INFO(getUserById)
+  {
     info->summary = "Get one User by userId";
 
     info->addResponse<Object<UserDto>>(Status::CODE_200, "application/json");
@@ -78,9 +100,9 @@ public:
   {
     return createDtoResponse(Status::CODE_200, m_userService.getUserById(userId));
   }
-  
-  
-  ENDPOINT_INFO(getUsers) {
+
+  ENDPOINT_INFO(getUsers)
+  {
     info->summary = "get all stored users";
 
     info->addResponse<oatpp::Object<UsersPageDto>>(Status::CODE_200, "application/json");
@@ -92,9 +114,9 @@ public:
   {
     return createDtoResponse(Status::CODE_200, m_userService.getAllUsers(offset, limit));
   }
-  
-  
-  ENDPOINT_INFO(deleteUser) {
+
+  ENDPOINT_INFO(deleteUser)
+  {
     info->summary = "Delete User by userId";
 
     info->addResponse<Object<StatusDto>>(Status::CODE_200, "application/json");
@@ -107,7 +129,6 @@ public:
   {
     return createDtoResponse(Status::CODE_200, m_userService.deleteUserById(userId));
   }
-
 };
 
 #include OATPP_CODEGEN_END(ApiController) //<- End Codegen

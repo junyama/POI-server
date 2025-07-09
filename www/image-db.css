@@ -1,0 +1,84 @@
+.webcamClass {
+    position: relative;
+    width: 640px;
+    height: 480px;
+    /* change it, if the aspect ratio of the camera is changed */
+    margin: 20px auto;
+}
+
+.objBoxWrapperClass:before {
+    content: "";
+    display: block;
+    padding-top: 56%; // set the aspect ratio of the camera
+}
+
+.webcamImgClass {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    /* to keep the aspect ration of the image for full screen mode */
+}
+
+.objBoxWrapperClass {
+    position: absolute;
+    width: 100%;
+}
+
+.objBox {
+    border: 2px solid;
+    position: absolute;
+    z-index: 1000;
+    text-align: center;
+    font-size: 12pt;
+}
+
+.heatMap {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    height: 100%;
+    width: 100%;
+    opacity: 50%;
+    border: 0;
+}
+
+.thumbnail {
+    width: 40px;
+    height: 30px;
+    padding: 0px;
+    margin: 0px;
+}
+
+input[type="text"][name="image"] {
+    display: none;
+}
+
+.modal-img {
+    width: 760px;
+}
+
+/* added for magnifier */
+.base_img_box {
+    z-index: 0;
+}
+
+.lens_img_box {
+    position: absolute;
+    opacity: 0;
+    width: 260px;
+    height: 260px;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 100%;
+    border: solid 5px #ffffff;
+    z-index: 1;
+}
+
+.lens_img {
+    position: absolute;
+    transform-origin: top left;
+}
+
+.setFilterClass:hover {
+    cursor: pointer;
+}

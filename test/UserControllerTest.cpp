@@ -10,7 +10,8 @@
 
 #include <cstdio>
 
-void UserControllerTest::onRun() {
+void UserControllerTest::onRun()
+{
 
   /* Remove test database file before running the test */
   OATPP_LOGi(TAG, "DB-File='{}'", TESTDATABASE_FILE);
@@ -26,57 +27,62 @@ void UserControllerTest::onRun() {
   runner.addController(std::make_shared<UserController>());
 
   /* Run test */
-  runner.run([this, &runner] {
+  runner.run([this, &runner]
+             {
+               /* Get client connection provider for Api Client */
+               OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
 
-    /* Get client connection provider for Api Client */
-    OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+               /* Get object mapper component */
+               OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, contentMappers);
 
-    /* Get object mapper component */
-    OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, contentMappers);
+               /* Create http request executor for Api Client */
+               auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
 
-    /* Create http request executor for Api Client */
-    auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
+               /* Create Test API client */
+               auto client = TestClient::createShared(requestExecutor,
+                                                      contentMappers->getMapper("application/json"));
 
-    /* Create Test API client */
-    auto client = TestClient::createShared(requestExecutor,
-                                           contentMappers->getMapper("application/json"));
+               auto dto = UserDto::createShared();
 
-    auto dto = UserDto::createShared();
+               dto->poiName = "jondoe";
+               dto->latitude = "jon.doe@abc.com";
+               dto->longtitude = "1234";
+               dto->address1 = "1234";
+               dto->address2 = "1234";
+               dto->address3 = "1234";
+               dto->zip = "1234";
+               dto->category = 0;
+               dto->iconId = 1;
+               dto->regTime = "1234";
+               dto->gpx = "<>";
 
-    dto->userName = "jondoe";
-    dto->email = "jon.doe@abc.com";
-    dto->password = "1234";
+               /* Call server API */
+               auto addedUserResponse = client->addUser(dto);
 
-    /* Call server API */
-    auto addedUserResponse = client->addUser(dto);
+               /* Assert that server responds with 200 */
+               OATPP_ASSERT(addedUserResponse->getStatusCode() == 200);
 
-    /* Assert that server responds with 200 */
-    OATPP_ASSERT(addedUserResponse->getStatusCode() == 200);
+               /* Read response body as MessageDto */
+               auto addedUserDto = addedUserResponse->readBodyToDto<oatpp::Object<UserDto>>(
+                   contentMappers->selectMapperForContent(addedUserResponse->getHeader("Content-Type")));
 
-    /* Read response body as MessageDto */
-    auto addedUserDto = addedUserResponse->readBodyToDto<oatpp::Object<UserDto>>(
-      contentMappers->selectMapperForContent(addedUserResponse->getHeader("Content-Type"))
-    );
+               int addedUserId = addedUserDto->id;
 
-    int addedUserId = addedUserDto->id;
+               /* Assert that user has been added */
+               auto newUserResponse = client->getUser(addedUserId);
 
-    /* Assert that user has been added */
-    auto newUserResponse = client->getUser(addedUserId);
+               OATPP_ASSERT(newUserResponse->getStatusCode() == 200);
 
-    OATPP_ASSERT(newUserResponse->getStatusCode() == 200);
+               auto newUserDto = newUserResponse->readBodyToDto<oatpp::Object<UserDto>>(
+                   contentMappers->selectMapperForContent(addedUserResponse->getHeader("Content-Type")));
 
-    auto newUserDto = newUserResponse->readBodyToDto<oatpp::Object<UserDto>>(
-      contentMappers->selectMapperForContent(addedUserResponse->getHeader("Content-Type"))
-    );
+               OATPP_ASSERT(newUserDto->id == addedUserId);
 
-    OATPP_ASSERT(newUserDto->id == addedUserId);
+               /* Delete newly added users */
+               auto deletedUserResponse = client->deleteUser(addedUserId);
 
-    /* Delete newly added users */
-    auto deletedUserResponse = client->deleteUser(addedUserId);
-
-    OATPP_ASSERT(deletedUserResponse->getStatusCode() == 200);
-
-  }, std::chrono::minutes(10) /* test timeout */);
+               OATPP_ASSERT(deletedUserResponse->getStatusCode() == 200); },
+             std::chrono::minutes(10) /* test timeout */);
 
   /* wait all server threads finished */
   std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -84,5 +90,4 @@ void UserControllerTest::onRun() {
   /* stop db connection pool */
   OATPP_COMPONENT(std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>, dbConnectionProvider);
   dbConnectionProvider->stop();
-
 }

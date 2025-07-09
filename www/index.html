@@ -74,9 +74,12 @@
                             <th>POI Name</th>
                             <th>Latitude</th>
                             <th>Longitude</th>
-                            <th>Address</th>
+                            <th>Address1</th>
+                            <th>Address2</th>
+                            <th>Address3</th>
+                            <th>zip</th>
                             <th>Category</th>
-                            <th>Icon ID</th>
+                            <th>Icon</th>
                             <th>POI file name</th>
                             <th>Registraion time</th>
                             <!--<th>Resolution</th>
@@ -403,92 +406,88 @@
             <div class="modal-content">
                 <form name="createUser">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Image</h4>
+                        <h4 class="modal-title">Add Record</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="indicator-target2">
                         <div class="form-group">
-                            <label>User ID</label>
-                            <input name="userId" type="text" class="form-control" value=1 required>
+                            <label>POI Name</label>
+                            <input name="poiName" type="text" class="form-control" value="クレド臼杵" required>
                         </div>
                         <div class="form-group">
-                            <label>User Name</label>
-                            <input name="userName" type="text" class="form-control" value="junichi" required>
+                            <label>Latitude</label>
+                            <input name="latitude" type="text" class="form-control" value="33.118946" required>
                         </div>
                         <div class="form-group">
-                            <label>Capured Date (UTC)</label>
-                            <input name="date" type="text" class="form-control" value="2021/09/04 12:17:00:000"
-                                required>
+                            <label>Longtitude</label>
+                            <input name="longtitude" type="text" class="form-control" value="131.806963" required>
                         </div>
                         <div class="form-group">
-                            <label>Chicken Breed</label>
-                            <input name="breed" type="text" class="form-control" value="Amakusa" required>
+                            <label>Address1</label>
+                            <input name="address1" type="text" class="form-control" value="大分県" required>
                         </div>
                         <div class="form-group">
-                            <label>Chick ID</label>
-                            <input name="chickId" type="text" class="form-control" value=1 required>
+                            <label>Address2</label>
+                            <input name="address2" type="text" class="form-control" value="臼杵市" required>
+                        </div>
+                        <div class="POI file name">
+                            <label>Address3</label>
+                            <input name="address3" type="text" class="form-control" value="海添" required>
                         </div>
                         <div class="form-group">
-                            <label>True Class</label>
-                            <select name="trueClass" class="form-control">
-                                <option value="-1">Unkown</option>
-                                <option value=0>Female</option>
-                                <option value=1>Male</option>
+                            <label>zip</label>
+                            <input name="zip" type="text" class="form-control" value="875-0042" required>
+                        </div> 
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="category" class="form-control">
+                                <option value='CAT_TRAVEL'>観光地</option>
+                                <option value='CAT_CAR'>車</option>
+                                <option value='CAT_THEATER'>劇場</option>
+                                <option value='CAT_BUSINESS'>神社、仏閣</option>
+                                <option value='CAT_MUSEUM'>美術館、博物</option>
+                                <option value='CAT_HOTEL'>ホテル、旅</option>
+                                <option value='CAT_HOSPITAL'>病院</option>
+                                <option value='CAT_GOVERMENT'>役所</option>
+                                <option value='CAT_RESTAURANT'>レストラン</option>
+                                <option value='CAT_OTHERS'>その他</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Observed Class</label>
-                            <select name="observedClass" class="form-control">
-                                <option value="-1">Unkown</option>
-                                <option value=0>Female</option>
-                                <option value=1>Male</option>
+                            <label>Icon</label>
+                            <select name="iconId" class="form-control">
+                                <option value=1>目的地＠</option>
+                                <option value=6>カメラ</option>
+                                <option value=7>ハート</option>
+                                <option value=11>レストラン</option>
+                                <option value=12>マップピン</option>
+                                <option value=13>車</option>
+                                <option value=14>ホテル</option>
+                                <option value=15>ショッピング</option>
+                                <option value=19>目的地</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Resolution Width</label>
-                            <input name="width" type="text" class="form-control" value="1920" required>
+                            <label>Registration time</label>
+                            <input name="regTime" type="text" class="form-control" value="2025-01-11-16:59:55" required>
                         </div>
                         <div class="form-group">
-                            <label>Resolution Height</label>
-                            <input name="height" type="text" class="form-control" value="1080" required>
+                            <label>POI file name</label>
+                            <input name="poiFileName" type="text" class="form-control" value="POI_33.118946x131.806963.gpx" required>
                         </div>
                         <div class="form-group">
-                            <label>Camera</label>
-                            <input name="device" type="text" class="form-control" value="/dev/video0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Image</label>
+                            <label>gpx file</label>
                             <div>
-                                <input id="base64Area1" name="image" type="text" class="form-control" required>
+                                <!--<input id="base64Area1" name="image" type="text" class="form-control" required>-->
                                 <input id="imageFileReadButtonId" class="btn btn-outline-primary" type="file" multiple
                                     onchange='//imageFileRead3();' value="Load from a file">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Bounding Boxes</label>
-                            <input name="boxList" type="text" class="form-control" value='[]' required>
-                        </div>
-                        <div class="form-group">
-                            <label>Rating</label>
-                            <select name="rating" class="form-control">
-                                <option value=1>1</option>
-                                <option value=2>2</option>
-                                <option value=3>3</option>
-                                <option value=4>4</option>
-                                <option value=5>5</option>
-                                <option value=11>T1</option>
-                                <option value=12>T2</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Notes</label>
-                            <input name="notes" type="text" class="form-control" value='' required>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <!--<button type="button" class="btn btn-info" data-bs-dismiss="modal"
-                            onClick="createNewUser()">Add</button>-->
+                        <button type="button" class="btn btn-info" data-bs-dismiss="modal"
+                            onClick="createNewUser()">Add</button>
                     </div>
                 </form>
             </div>
